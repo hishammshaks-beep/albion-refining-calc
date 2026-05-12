@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Albion Master Calc | هشام</title>
+    <title>Albion Multi-Calc | هشام</title>
     <style>
         :root { --gold: #f1c40f; --green: #2ecc71; --red: #e74c3c; --bg: #121212; --card-bg: #1e1e1e; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; direction: rtl; padding: 10px; margin: 0; display: flex; justify-content: center; }
@@ -14,31 +14,31 @@
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .input-group { margin-bottom: 12px; }
         label { display: block; font-size: 0.75rem; color: #bbb; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 10px; background: #252525; border: 1px solid #444; border-radius: 8px; color: var(--green); font-weight: bold; box-sizing: border-box; font-size: 1rem; }
+        input, select { width: 100%; padding: 12px; background: #252525; border: 1px solid #444; border-radius: 10px; color: var(--green); font-weight: bold; box-sizing: border-box; font-size: 1rem; }
         .result-card { background: #000; border-radius: 15px; padding: 15px; margin-top: 20px; border: 2px solid var(--gold); text-align: center; }
         .profit-val { font-size: 1.8rem; font-weight: bold; display: block; margin: 5px 0; }
-        .needed-box { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-top: 10px; color: var(--gold); border: 1px dashed #444; }
+        .needed-item { background: #222; padding: 10px; border-radius: 8px; margin-top: 8px; border-right: 4px solid var(--gold); text-align: right; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 <div class="card">
     <div class="header">
-        <h2>حاسبة الموارد التراكمية ⚔️</h2>
-        <small>إعداد: هشام (نظم معلومات)</small>
+        <h2>حاسبة التكرير الذكية ⚔️</h2>
+        <small>تطوير المهندس: هشام</small>
     </div>
 
-    <div class="section-title">📦 إعدادات التشغيل</div>
+    <div class="section-title">📦 إعدادات المورد والكمية</div>
     <div class="input-grid">
         <div class="input-group">
             <label>المستوى (Tier):</label>
             <select id="tier" onchange="calculate()">
-                <option value="2">T2 (خام فقط)</option>
-                <option value="3">T3 (يحتاج T2)</option>
-                <option value="4" selected>T4 (يحتاج T3)</option>
-                <option value="5">T5 (يحتاج T4)</option>
-                <option value="6">T6 (يحتاج T5)</option>
-                <option value="7">T7 (يحتاج T6)</option>
-                <option value="8">T8 (يحتاج T7)</option>
+                <option value="2">T2</option>
+                <option value="3">T3</option>
+                <option value="4" selected>T4</option>
+                <option value="5">T5</option>
+                <option value="6">T6</option>
+                <option value="7">T7</option>
+                <option value="8">T8</option>
             </select>
         </div>
         <div class="input-group">
@@ -47,46 +47,76 @@
         </div>
     </div>
 
-    <div id="resultBox" class="result-card">
-        <span style="font-size: 0.8rem; color:#888;">صافي الربح المتوقع:</span>
-        <span id="totalProfit" class="profit-val">0</span>
-        
-        <!-- الخانة الجديدة لحساب الموارد المطلوبة -->
-        <div class="needed-box" id="neededInfo">
-            ستحتاج إلى: 0 قطعة من المستوى السابق
+    <div class="section-title">💸 أسعار السوق (للحبة)</div>
+    <div class="input-grid">
+        <div class="input-group">
+            <label>سعر الخام (Raw):</label>
+            <input type="number" id="rawPrice" value="150" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>سعر الـ (T-1):</label>
+            <input type="number" id="prevPrice" value="50" oninput="calculate()">
         </div>
     </div>
-    
-    <p style="font-size: 0.7rem; color: #555; text-align: center; margin-top: 15px;">
-        * الحسبة تعتمد على نظام تكرير ألبيون القياسي.
-    </p>
+    <div class="input-group">
+        <label>سعر بيع المنتج النهائي:</label>
+        <input type="number" id="sellPrice" value="1000" oninput="calculate()">
+    </div>
+
+    <div class="input-group">
+        <label>نسبة الاسترداد (RRR):</label>
+        <select id="rrr" onchange="calculate()">
+            <option value="0.152">15.2% (مدينة عادية)</option>
+            <option value="0.367" selected>36.7% (مدينة مناسبة)</option>
+            <option value="0.539">53.9% (باستخدام Focus)</option>
+        </select>
+    </div>
+
+    <div id="resultBox" class="result-card">
+        <span style="color:#888; font-size: 0.8rem;">صافي الربح المتوقع للكل:</span>
+        <span id="totalProfit" class="profit-val">0</span>
+        
+        <div class="needed-item" id="rawNeededText">هتحتاج خام: 0</div>
+        <div class="needed-item" id="prevNeededText">هتحتاج من المستوى السابق: 0</div>
+    </div>
 </div>
 
 <script>
 function calculate() {
     const tier = parseInt(document.getElementById('tier').value);
     const amount = parseFloat(document.getElementById('amount').value) || 0;
-    const rrr = 0.367; // نسبة الاسترداد الافتراضية للمدينة المناسبة
+    const rawPrice = parseFloat(document.getElementById('rawPrice').value) || 0;
+    const prevPrice = parseFloat(document.getElementById('prevPrice').value) || 0;
+    const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 0;
+    const rrr = parseFloat(document.getElementById('rrr').value);
 
-    // 1. حساب عدد الموارد من المستوى السابق (T-1) المطلوبة
-    // في ألبيون: لإنتاج كمية معينة، ستحتاج قطعة واحدة من المستوى السابق لكل ضغطة
-    // ولكن مع الـ RRR، الكمية الفعلية اللي هتستهلكها بتقل
-    let neededBeforeRRR = amount;
-    if (tier === 2) neededBeforeRRR = 0; // T2 لا يحتاج مستوى سابق
+    // 1. تحديد المعامل (كم خامة لكل قطعة)
+    let multiplier = 1;
+    if (tier === 3 || tier === 4) multiplier = 2;
+    else if (tier === 5) multiplier = 3;
+    else if (tier === 6) multiplier = 4;
+    else if (tier >= 7) multiplier = 5;
 
-    const actualNeeded = Math.ceil(neededBeforeRRR * (1 - rrr));
+    // 2. حساب الموارد المطلوبة فعلياً (بعد الاسترداد)
+    const rawNeeded = Math.ceil((amount * multiplier) * (1 - rrr));
+    const prevNeeded = tier > 2 ? Math.ceil(amount * (1 - rrr)) : 0;
+
+    // 3. حساب التكلفة والربح
+    const totalCost = (rawNeeded * rawPrice) + (prevNeeded * prevPrice);
+    const totalTax = (sellPrice * amount) * 0.04; // ضريبة السوق 4%
+    const netProfit = (sellPrice * amount) - totalCost - totalTax;
+
+    // 4. تحديث الشاشة
+    document.getElementById('totalProfit').innerText = Math.floor(netProfit).toLocaleString() + " Silver";
+    document.getElementById('totalProfit').style.color = netProfit > 0 ? "var(--green)" : "var(--red)";
     
-    const neededInfo = document.getElementById('neededInfo');
+    document.getElementById('rawNeededText').innerText = `📦 هتحتاج تشتري: ${rawNeeded.toLocaleString()} حبة خام`;
     if (tier > 2) {
-        neededInfo.innerText = `ستحتاج لشراء: ${actualNeeded.toLocaleString()} قطعة T${tier-1}`;
-        neededInfo.style.display = "block";
+        document.getElementById('prevNeededText').style.display = "block";
+        document.getElementById('prevNeededText').innerText = `🔗 هتحتاج تشتري: ${prevNeeded.toLocaleString()} حبة T${tier-1}`;
     } else {
-        neededInfo.style.display = "none";
+        document.getElementById('prevNeededText').style.display = "none";
     }
-
-    // حسبة ربح تقريبية سريعة (للتوضيح)
-    const mockProfit = amount * 50; 
-    document.getElementById('totalProfit').innerText = Math.floor(mockProfit).toLocaleString() + " Silver";
 }
 window.onload = calculate;
 </script>
