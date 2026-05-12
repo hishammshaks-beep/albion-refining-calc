@@ -3,109 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Albion Master Calc | هشام</title>
+    <title>Albion Resource Calc | هشام</title>
     <style>
         :root { --gold: #f1c40f; --green: #2ecc71; --red: #e74c3c; --bg: #121212; --card-bg: #1e1e1e; }
         body { background: var(--bg); color: #eee; font-family: sans-serif; direction: rtl; padding: 10px; margin: 0; display: flex; justify-content: center; }
         .card { background: var(--card-bg); border-radius: 20px; padding: 20px; width: 100%; max-width: 450px; border: 1px solid #333; }
-        .header { text-align: center; margin-bottom: 15px; }
-        h2 { color: var(--gold); margin: 0; }
+        h2 { color: var(--gold); text-align: center; margin-bottom: 5px; }
+        .section-title { font-size: 0.8rem; color: var(--gold); margin: 15px 0 5px; border-bottom: 1px solid #333; }
         .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         input, select { width: 100%; padding: 12px; background: #252525; border: 1px solid #444; border-radius: 10px; color: var(--green); font-weight: bold; box-sizing: border-box; }
         label { display: block; font-size: 0.75rem; color: #bbb; margin-bottom: 5px; }
-        .result-card { background: #000; border-radius: 15px; padding: 15px; margin-top: 20px; border: 2px solid var(--gold); text-align: center; }
-        .profit-val { font-size: 1.8rem; font-weight: bold; display: block; margin: 5px 0; }
-        .tax-info { color: #888; font-size: 0.8rem; margin-top: 5px; }
-        .needed-item { background: #222; padding: 8px; border-radius: 8px; margin-top: 5px; font-size: 0.85rem; border-right: 3px solid var(--gold); }
+        .result-card { background: #000; border-radius: 15px; padding: 15px; margin-top: 15px; border: 2px solid var(--gold); }
+        .stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px border #222; }
+        .val { font-weight: bold; color: var(--gold); }
+        .profit-box { text-align: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #333; }
     </style>
 </head>
 <body>
 <div class="card">
-    <div class="header">
-        <h2>حاسبة أرباح ألبيون ⚔️</h2>
-        <small>تطوير: هشام</small>
-    </div>
+    <h2>حاسبة الموارد المتاحة ⚒️</h2>
+    <p style="text-align: center; font-size: 0.7rem; margin: 0;">تطوير المهندس هشام - Albion Online</p>
 
+    <div class="section-title">📥 الموارد اللي معاك</div>
     <div class="input-grid">
         <div>
             <label>المستوى (Tier):</label>
             <select id="tier" onchange="calculate()">
-                <option value="3">T3</option>
-                <option value="4" selected>T4</option>
-                <option value="5">T5</option>
-                <option value="6">T6</option>
-                <option value="7">T7</option>
-                <option value="8">T8</option>
+                <optgroup label="T4"><option value="4">T4.0</option><option value="4.1">T4.1</option><option value="4.2">T4.2</option><option value="4.3">T4.3</option><option value="4.4">T4.4</option></optgroup>
+                <optgroup label="T5"><option value="5">T5.0</option><option value="5.1">T5.1</option><option value="5.2">T5.2</option><option value="5.3">T5.3</option><option value="5.4">T5.4</option></optgroup>
+                <optgroup label="T6"><option value="6">T6.0</option><option value="6.1">T6.1</option><option value="6.2">T6.2</option><option value="6.3">T6.3</option><option value="6.4">T6.4</option></optgroup>
+                <optgroup label="T7"><option value="7">T7.0</option><option value="7.1">T7.1</option><option value="7.2">T7.2</option><option value="7.3">T7.3</option><option value="7.4">T7.4</option></optgroup>
+                <optgroup label="T8"><option value="8">T8.0</option><option value="8.1">T8.1</option><option value="8.2">T8.2</option><option value="8.3">T8.3</option><option value="8.4">T8.4</option></optgroup>
             </select>
         </div>
         <div>
-            <label>الكمية المستهدفة:</label>
-            <input type="number" id="amount" value="100" oninput="calculate()">
+            <label>كمية الخام المتوفرة:</label>
+            <input type="number" id="myRaw" value="1000" oninput="calculate()">
         </div>
     </div>
 
+    <div class="section-title">💹 الأسعار والنسب</div>
     <div class="input-grid">
-        <div>
-            <label>سعر الخام (Raw):</label>
-            <input type="number" id="rawPrice" value="150" oninput="calculate()">
-        </div>
-        <div>
-            <label>سعر الـ (T-1):</label>
-            <input type="number" id="prevPrice" value="50" oninput="calculate()">
-        </div>
+        <div><label>سعر الخام:</label><input type="number" id="rawPrice" value="80" oninput="calculate()"></div>
+        <div><label>سعر الـ (T-1):</label><input type="number" id="prevPrice" value="69" oninput="calculate()"></div>
     </div>
-
     <div class="input-grid">
-        <div>
-            <label>سعر البيع:</label>
-            <input type="number" id="sellPrice" value="1000" oninput="calculate()">
-        </div>
-        <div>
-            <label>حالة الاشتراك:</label>
-            <select id="isPremium" onchange="calculate()">
-                <option value="0.04">ببريميوم (4% ضريبة)</option>
-                <option value="0.08">بدون بريميوم (8% ضريبة)</option>
+        <div><label>سعر البيع:</label><input type="number" id="sellPrice" value="220" oninput="calculate()"></div>
+        <div><label>الاسترداد %:</label><input type="number" id="rrr" value="36.7" oninput="calculate()"></div>
+    </div>
+    <div class="input-grid">
+        <div style="grid-column: span 2;">
+            <label>الاشتراك:</label>
+            <select id="premium" onchange="calculate()">
+                <option value="0.04">بريميوم (4%)</option>
+                <option value="0.08">بدون بريميوم (8%)</option>
             </select>
         </div>
     </div>
 
     <div class="result-card">
-        <span style="color:#888; font-size: 0.8rem;">صافي الربح بعد الضريبة:</span>
-        <span id="totalProfit" class="profit-val">0</span>
-        <div id="taxValue" class="tax-info">خصم الماركت: 0 سيلفر</div>
-        
-        <div style="margin-top:10px;">
-            <div class="needed-item" id="rawNeededText">خام مطلوب: 0</div>
-            <div class="needed-item" id="prevNeededText">T-1 مطلوب: 0</div>
+        <div class="stat-row"><span>محتاج تشتري (T-1):</span> <span id="needPrev" class="val">0</span></div>
+        <div class="stat-row"><span>الإنتاج المتوقع:</span> <span id="expectedOutput" class="val" style="color:var(--green)">0</span></div>
+        <div class="profit-box">
+            <div style="font-size: 0.8rem; color:#888;">صافي الربح المتوقع:</div>
+            <div id="profit" style="font-size: 1.6rem; font-weight: bold;">0 Silver</div>
         </div>
     </div>
 </div>
 
 <script>
 function calculate() {
-    const tier = parseInt(document.getElementById('tier').value);
-    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const tierFull = parseFloat(document.getElementById('tier').value);
+    const myRaw = parseFloat(document.getElementById('myRaw').value) || 0;
     const rawPrice = parseFloat(document.getElementById('rawPrice').value) || 0;
     const prevPrice = parseFloat(document.getElementById('prevPrice').value) || 0;
     const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 0;
-    const taxRate = parseFloat(document.getElementById('isPremium').value);
-    const rrr = 0.367;
+    const rrr = (parseFloat(document.getElementById('rrr').value) || 0) / 100;
+    const tax = parseFloat(document.getElementById('premium').value);
 
-    let multiplier = (tier === 3 || tier === 4) ? 2 : (tier === 5 ? 3 : (tier === 6 ? 4 : 5));
+    // تحديد المعامل
+    let multiplier = Math.floor(tierFull) === 4 ? 2 : (Math.floor(tierFull) === 5 ? 3 : (Math.floor(tierFull) === 6 ? 4 : 5));
 
-    const rawNeeded = Math.ceil((amount * multiplier) * (1 - rrr));
-    const prevNeeded = Math.ceil(amount * (1 - rrr));
-
-    const totalCost = (rawNeeded * rawPrice) + (prevNeeded * prevPrice);
-    const marketTax = (sellPrice * amount) * taxRate; // الضريبة المتغيرة
-    const netProfit = (sellPrice * amount) - totalCost - marketTax;
-
-    document.getElementById('totalProfit').innerText = Math.floor(netProfit).toLocaleString() + " Silver";
-    document.getElementById('totalProfit').style.color = netProfit > 0 ? "var(--green)" : "var(--red)";
-    document.getElementById('taxValue').innerText = `خصم الماركت (${taxRate*100}%): ` + Math.floor(marketTax).toLocaleString() + " Silver";
+    // الحسبة العكسية: كمية الإنتاج بناء على الخام المتوفر مع الاسترداد
+    // الإنتاج = الخام / (المعامل * (1 - rrr))
+    const totalOutput = Math.floor(myRaw / (multiplier * (1 - rrr)));
     
-    document.getElementById('rawNeededText').innerText = `📦 اشري خام: ${rawNeeded.toLocaleString()}`;
-    document.getElementById('prevNeededText').innerText = `🔗 اشري T${tier-1}: ${prevNeeded.toLocaleString()}`;
+    // كمية الـ T-1 اللي محتاجها عشان تخلص الـ 1000 خامة
+    const neededPrev = Math.floor(totalOutput * (1 - rrr));
+
+    // حساب التكاليف (بفرض إنك دافع تمن الخام أو حاسب قيمته السوقية)
+    const cost = (myRaw * rawPrice) + (neededPrev * prevPrice);
+    const revenue = totalOutput * sellPrice;
+    const netProfit = revenue - cost - (revenue * tax);
+
+    document.getElementById('needPrev').innerText = neededPrev.toLocaleString() + ` قطعة T${Math.floor(tierFull)-1}`;
+    document.getElementById('expectedOutput').innerText = totalOutput.toLocaleString() + " قطعة نهائية";
+    
+    const profitEl = document.getElementById('profit');
+    profitEl.innerText = Math.floor(netProfit).toLocaleString() + " Silver";
+    profitEl.style.color = netProfit > 0 ? "var(--green)" : "var(--red)";
 }
 window.onload = calculate;
 </script>
