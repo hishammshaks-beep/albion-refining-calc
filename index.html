@@ -3,100 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Albion Master Tool | هشام</title>
+    <title>Albion Master | Hisham</title>
     <style>
         :root { --gold: #f1c40f; --green: #2ecc71; --red: #e74c3c; --bg: #121212; --card-bg: #1e1e1e; }
-        body { background: var(--bg); color: #eee; font-family: sans-serif; direction: rtl; padding: 5px; margin: 0; font-size: 14px; }
-        .container { max-width: 600px; margin: auto; padding-bottom: 30px; }
-        .slogan { text-align: center; color: var(--gold); font-weight: bold; font-size: 1.2rem; margin: 15px 0; }
-        .main-card { background: var(--card-bg); border-radius: 15px; padding: 12px; margin-bottom: 12px; border: 1px solid #333; }
-        .section-header { font-size: 0.9rem; color: var(--gold); margin: 15px 0 10px; border-bottom: 1px solid #444; padding-bottom: 5px; font-weight: bold; }
-        
-        /* تصميم المقارنة */
-        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        body { background: var(--bg); color: #eee; font-family: sans-serif; direction: rtl; padding: 5px; margin: 0; }
+        .container { max-width: 500px; margin: auto; padding-bottom: 50px; }
+        .slogan { text-align: center; color: var(--gold); font-weight: bold; margin: 15px 0; }
+        .card { background: var(--card-bg); border-radius: 15px; padding: 12px; margin-bottom: 10px; border: 1px solid #333; }
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .tier-card { background: #1a1a1a; border-radius: 12px; padding: 10px; border: 1px solid #333; position: relative; }
-        .best-label { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 1px 6px; border-radius: 8px; font-size: 0.6rem; font-weight: bold; display: none; }
-        .active-best { border: 2px solid var(--gold); }
+        .active-best { border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(241,196,15,0.3); }
+        .best-label { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 1px 8px; border-radius: 8px; font-size: 0.6rem; font-weight: bold; display: none; }
         .active-best .best-label { display: block; }
-
-        input, select { width: 100%; padding: 8px; background: #252525; border: 1px solid #444; border-radius: 8px; color: var(--green); font-weight: bold; margin-bottom: 5px; box-sizing: border-box; font-size: 13px; }
+        input, select { width: 100%; padding: 10px; background: #252525; border: 1px solid #444; border-radius: 8px; color: var(--green); font-weight: bold; margin-bottom: 5px; box-sizing: border-box; }
         label { display: block; font-size: 0.7rem; color: #888; margin-bottom: 2px; }
-        
         .res-box { background: #000; border: 1px solid var(--gold); border-radius: 10px; padding: 8px; text-align: center; margin-top: 5px; }
-        .big-val { font-size: 1rem; font-weight: bold; color: var(--green); display: block; }
-        .profit-frame { grid-column: span 2; border: 2px solid var(--green); padding: 10px; border-radius: 12px; margin-top: 5px; text-align: center; }
+        .profit-frame { border: 2px solid var(--green); padding: 12px; border-radius: 12px; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="slogan">خطط بذكاء توصل للفيل 🐘</div>
 
-    <!-- الإعدادات العامة -->
-    <div class="main-card">
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
-            <div><label>الميزانية الكلية:</label><input type="number" id="budget" value="0" oninput="calculate()"></div>
-            <div><label>الاسترداد%:</label><input type="number" id="rrr" value="0" oninput="calculate()"></div>
+    <div class="card">
+        <label>الميزانية الكلية (سيلفر):</label>
+        <input type="number" id="budget" value="0" oninput="calculate()">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div><label>الاسترداد (RRR%):</label><input type="number" id="rrr" value="0" oninput="calculate()"></div>
+            <div><label>الضريبة:</label><select id="tax" onchange="calculate()"><option value="0.04">4%</option><option value="0.08" selected>8%</option></select></div>
         </div>
-        <label>الضريبة:</label>
-        <select id="tax" onchange="calculate()">
-            <option value="0.04">بريميوم (4%)</option>
-            <option value="0.08" selected>بدون (8%)</option>
-        </select>
     </div>
 
-    <div class="section-header">⚖️ مقارنة التيرات (أيهما أربح؟)</div>
+    <div style="color:var(--gold); font-weight:bold; margin-bottom:10px;">⚖️ مقارنة الأرباح</div>
     <div class="compare-grid">
+        <!-- كارت 1 -->
         <div class="tier-card" id="card1">
             <div class="best-label">أفضل خيار ⭐</div>
             <select id="t1_tier" onchange="calculate()"></select>
-            <label>خام:</label><input type="number" id="t1_raw" value="0" oninput="calculate()">
-            <label>T-1:</label><input type="number" id="t1_prev" value="0" oninput="calculate()">
-            <label>بيع:</label><input type="number" id="t1_sell" value="0" oninput="calculate()">
-            <div class="res-box"><span id="t1_profit" class="big-val">0</span><span style="font-size:0.6rem" id="t1_roi">ROI: 0%</span></div>
+            <label>سعر الخام:</label><input type="number" id="t1_raw" value="0" oninput="calculate()">
+            <label>سعر T-1:</label><input type="number" id="t1_prev" value="0" oninput="calculate()">
+            <label>سعر البيع:</label><input type="number" id="t1_sell" value="0" oninput="calculate()">
+            <div class="res-box"><span id="t1_profit" style="font-weight:bold;">0</span><br><span id="t1_roi" style="font-size:0.6rem; color:var(--gold);">ROI: 0%</span></div>
         </div>
-
+        <!-- كارت 2 -->
         <div class="tier-card" id="card2">
             <div class="best-label">أفضل خيار ⭐</div>
             <select id="t2_tier" onchange="calculate()"></select>
-            <label>خام:</label><input type="number" id="t2_raw" value="0" oninput="calculate()">
-            <label>T-1:</label><input type="number" id="t2_prev" value="0" oninput="calculate()">
-            <label>بيع:</label><input type="number" id="t2_sell" value="0" oninput="calculate()">
-            <div class="res-box"><span id="t2_profit" class="big-val">0</span><span style="font-size:0.6rem" id="t2_roi">ROI: 0%</span></div>
+            <label>سعر الخام:</label><input type="number" id="t2_raw" value="0" oninput="calculate()">
+            <label>سعر T-1:</label><input type="number" id="t2_prev" value="0" oninput="calculate()">
+            <label>سعر البيع:</label><input type="number" id="t2_sell" value="0" oninput="calculate()">
+            <div class="res-box"><span id="t2_profit" style="font-weight:bold;">0</span><br><span id="t2_roi" style="font-size:0.6rem; color:var(--gold);">ROI: 0%</span></div>
         </div>
     </div>
 
-    <div class="section-header">📦 حسبة الموارد (لو معاك كمية)</div>
-    <div class="main-card">
-        <label>كمية الخام المتوفرة:</label>
+    <div style="color:var(--gold); font-weight:bold; margin:20px 0 10px;">📦 حسبة الموارد (بالكمية)</div>
+    <div class="card">
+        <label>كمية الخام اللي معاك (مثلاً 1000):</label>
         <input type="number" id="detailRaw" value="0" oninput="calculate()">
-        <div class="compare-grid" style="margin-top:10px;">
+        <p style="font-size:0.6rem; color:#888; margin:5px 0;">* الحسبة تحت بتعتمد على أسعار "أفضل خيار" اللي اخترته فوق.</p>
+        <div class="compare-grid">
             <div class="res-box"><label>التكلفة:</label><span id="detCost" style="color:#bbb">0</span></div>
-            <div class="res-box"><label>إنتاج متوقع:</label><span id="detOut" class="big-val">0</span></div>
-            <div class="profit-frame" id="detProfitBox">
-                <label>الربح الصافي:</label>
-                <span id="detProfit" style="font-size: 1.3rem; font-weight: bold;">0 Silver</span>
-            </div>
+            <div class="res-box"><label>إنتاج متوقع:</label><span id="detOut" style="color:var(--green); font-weight:bold;">0</span></div>
+        </div>
+        <div class="profit-frame" id="detProfitBox">
+            <label>الربح الصافي النهائي:</label>
+            <div id="detProfit" style="font-size: 1.4rem; font-weight: bold;">0 Silver</div>
         </div>
     </div>
 </div>
 
 <script>
-// توليد التيرات تلقائياً
 const tiers = [];
-for(let i=4; i<=8; i++) { 
-    tiers.push(`T${i}.0`); 
-    for(let j=1; j<=4; j++) tiers.push(`T${i}.${j}`);
-}
-const selects = ['t1_tier', 't2_tier'];
-selects.forEach(s => {
+for(let i=4; i<=8; i++) { tiers.push(`T${i}.0`); for(let j=1; j<=4; j++) tiers.push(`T${i}.${j}`); }
+['t1_tier', 't2_tier'].forEach(s => {
     const el = document.getElementById(s);
     tiers.forEach(t => el.innerHTML += `<option value="${t}">${t}</option>`);
 });
 
 function calculate() {
-    const inputs = document.querySelectorAll('input, select');
     const data = {};
-    inputs.forEach(i => { data[i.id] = i.value; localStorage.setItem(i.id, i.value); });
+    document.querySelectorAll('input, select').forEach(i => { data[i.id] = i.value; localStorage.setItem(i.id, i.value); });
 
     const budget = parseFloat(data.budget) || 0;
     const rrr = (parseFloat(data.rrr) || 0) / 100;
@@ -109,45 +95,43 @@ function calculate() {
         const pSell = parseFloat(data[prefix + '_sell']) || 0;
         let mult = (tNum <= 4) ? 2 : (tNum === 5 ? 3 : (tNum === 6 ? 4 : 5));
         const unitCost = (mult * pRaw * (1 - rrr)) + (pPrev * (1 - rrr));
-        if (unitCost <= 0 || budget <= 0) return { p: 0, r: 0 };
+        if (unitCost <= 0) return { p: -1, r: 0, raw: pRaw, prev: pPrev, sell: pSell, m: mult };
         const units = Math.floor(budget / unitCost);
         const profit = (units * pSell) - (units * unitCost) - (units * pSell * tax);
-        return { p: profit, r: (profit / budget) * 100 };
+        return { p: profit, r: (profit / budget) * 100, raw: pRaw, prev: pPrev, sell: pSell, m: mult };
     }
 
     const r1 = getStats('t1'); const r2 = getStats('t2');
     
-    // تحديث واجهة المقارنة
-    const setUI = (id, res, cardId) => {
-        const pEl = document.getElementById(id + '_profit');
-        pEl.innerText = Math.floor(res.p).toLocaleString();
-        pEl.style.color = res.p >= 0 ? "var(--green)" : "var(--red)";
-        document.getElementById(id + '_roi').innerText = "ROI: " + res.r.toFixed(1) + "%";
-    };
-    setUI('t1', r1); setUI('t2', r2);
-    
-    document.getElementById('card1').className = (r1.p > r2.p && r1.p > 0) ? 'tier-card active-best' : 'tier-card';
-    document.getElementById('card2').className = (r2.p > r1.p && r2.p > 0) ? 'tier-card active-best' : 'tier-card';
+    document.getElementById('t1_profit').innerText = Math.floor(r1.p).toLocaleString();
+    document.getElementById('t1_profit').style.color = r1.p >= 0 ? "var(--green)" : "var(--red)";
+    document.getElementById('t1_roi').innerText = "ROI: " + r1.r.toFixed(1) + "%";
 
-    // حسبة التفاصيل (الجزء السفلي)
+    document.getElementById('t2_profit').innerText = Math.floor(r2.p).toLocaleString();
+    document.getElementById('t2_profit').style.color = r2.p >= 0 ? "var(--green)" : "var(--red)";
+    document.getElementById('t2_roi').innerText = "ROI: " + r2.r.toFixed(1) + "%";
+
+    const isR1Best = r1.p > r2.p;
+    document.getElementById('card1').className = isR1Best ? 'tier-card active-best' : 'tier-card';
+    document.getElementById('card2').className = !isR1Best ? 'tier-card active-best' : 'tier-card';
+
+    // الجزء اللي تحت يسحب من الأفضل
+    const best = isR1Best ? r1 : r2;
     const dRaw = parseFloat(data.detailRaw) || 0;
-    const tNumDetail = parseInt(data.t1_tier.split('T')[1]); // بيحسب على تير الكارت الأول
-    let mD = (tNumDetail <= 4) ? 2 : (tNumDetail === 5 ? 3 : (tNumDetail === 6 ? 4 : 5));
-    const outD = Math.floor(dRaw / (mD * (1 - rrr)));
-    const costD = (dRaw * (parseFloat(data.t1_raw)||0)) + (outD * (1-rrr) * (parseFloat(data.t1_prev)||0));
-    const profitD = (outD * (parseFloat(data.t1_sell)||0)) - costD - (outD * (parseFloat(data.t1_sell)||0) * tax);
-    
+    const outD = Math.floor(dRaw / (best.m * (1 - rrr)));
+    const costD = (dRaw * best.raw) + (outD * (1 - rrr) * best.prev);
+    const profitD = (outD * best.sell) - costD - (outD * best.sell * tax);
+
     document.getElementById('detOut').innerText = outD.toLocaleString();
     document.getElementById('detCost').innerText = Math.floor(costD).toLocaleString();
     const dP = document.getElementById('detProfit');
     dP.innerText = Math.floor(profitD).toLocaleString() + " Silver";
-    document.getElementById('detProfitBox').style.borderColor = profitD >= 0 ? "var(--green)" : "var(--red)";
     dP.style.color = profitD >= 0 ? "var(--green)" : "var(--red)";
+    document.getElementById('detProfitBox').style.borderColor = profitD >= 0 ? "var(--green)" : "var(--red)";
 }
 
 window.onload = () => {
-    const inputs = document.querySelectorAll('input, select');
-    inputs.forEach(i => { if(localStorage.getItem(i.id)) i.value = localStorage.getItem(i.id); });
+    document.querySelectorAll('input, select').forEach(i => { if(localStorage.getItem(i.id)) i.value = localStorage.getItem(i.id); });
     calculate();
 };
 </script>
