@@ -3,126 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Albion Smart Plan | هشام</title>
+    <title>Albion Compare</title>
     <style>
         :root { --gold: #f1c40f; --green: #2ecc71; --red: #e74c3c; --bg: #121212; --card-bg: #1e1e1e; }
-        body { background: var(--bg); color: #eee; font-family: sans-serif; direction: rtl; padding: 10px; margin: 0; display: flex; justify-content: center; }
-        .card { background: var(--card-bg); border-radius: 20px; padding: 20px; width: 100%; max-width: 500px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .slogan { text-align: center; color: var(--gold); font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
-        h2 { color: #fff; text-align: center; margin: 5px 0; font-size: 1rem; opacity: 0.8; }
-        .section-title { font-size: 0.85rem; color: var(--gold); margin: 20px 0 10px; border-bottom: 1px solid #333; padding-bottom: 5px; font-weight: bold; }
-        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        input, select { width: 100%; padding: 12px; background: #252525; border: 1px solid #444; border-radius: 10px; color: var(--green); font-weight: bold; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--gold); }
-        label { display: block; font-size: 0.75rem; color: #bbb; margin-bottom: 5px; }
-        .result-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .res-box { background: #000; border: 1px solid var(--gold); border-radius: 12px; padding: 12px; text-align: center; transition: 0.3s; }
-        .big-val { font-size: 1.1rem; font-weight: bold; color: var(--green); display: block; }
-        .label-sm { font-size: 0.7rem; color: #888; margin-bottom: 3px; display: block; }
-        .main-profit { grid-column: span 2; border: 2px solid var(--green); padding: 15px; border-radius: 15px; background: rgba(0,0,0,0.3); }
+        body { background: var(--bg); color: #eee; font-family: sans-serif; direction: rtl; padding: 10px; margin: 0; }
+        .container { max-width: 800px; margin: auto; }
+        .slogan { text-align: center; color: var(--gold); font-weight: bold; font-size: 1.3rem; margin: 15px 0; }
+        .setup-card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tier-card { background: #1a1a1a; border-radius: 15px; padding: 15px; border: 2px solid #333; position: relative; transition: 0.3s; }
+        .best-label { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #000; padding: 2px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; display: none; }
+        .active-best { border-color: var(--gold); transform: scale(1.02); }
+        .active-best .best-label { display: block; }
+        input, select { width: 100%; padding: 10px; background: #252525; border: 1px solid #444; border-radius: 8px; color: var(--green); font-weight: bold; margin-bottom: 10px; box-sizing: border-box; }
+        label { display: block; font-size: 0.7rem; color: #bbb; margin-bottom: 3px; }
+        .stat-line { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px style solid #222; padding-bottom: 3px; }
+        .stat-val { font-weight: bold; color: #fff; }
+        .profit-val { font-size: 1.1rem; font-weight: bold; text-align: center; display: block; margin-top: 10px; }
+        .roi-tag { text-align: center; font-size: 0.8rem; color: var(--gold); display: block; }
     </style>
 </head>
 <body>
-<div class="card">
+<div class="container">
     <div class="slogan">خطط بذكاء توصل للفيل 🐘</div>
-    <h2>حاسبة المستثمر - تطوير هشام</h2>
 
-    <div class="section-title">📊 بيانات السوق</div>
-    <div class="input-grid">
-        <div>
-            <label>المستوى (Tier):</label>
-            <select id="tier" onchange="calculate()">
-                <option value="4">T4.0</option><option value="4.1">T4.1</option><option value="4.2">T4.2</option>
-                <option value="5">T5.0</option><option value="5.1">T5.1</option><option value="5.2">T5.2</option>
-                <option value="6">T6.0</option>
-            </select>
-        </div>
-        <div><label>سعر البيع النهائي:</label><input type="number" id="sellPrice" value="220" oninput="calculate()"></div>
-    </div>
-    <div class="input-grid">
-        <div><label>سعر الخام:</label><input type="number" id="rawPrice" value="50" oninput="calculate()"></div>
-        <div><label>سعر الـ (T-1):</label><input type="number" id="prevPrice" value="25" oninput="calculate()"></div>
-    </div>
-    <div class="input-grid">
-        <div><label>الاسترداد (RRR%):</label><input type="number" id="rrr" value="36.7" oninput="calculate()"></div>
-        <div><label>الاشتراك:</label>
-            <select id="premium" onchange="calculate()">
-                <option value="0.04">بريميوم (ضريبة 4%)</option>
-                <option value="0.08">بدون (ضريبة 8%)</option>
-            </select>
+    <div class="setup-card">
+        <label>الميزانية المتوفرة (سيلفر):</label>
+        <input type="number" id="budget" value="1000000" oninput="calculate()">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div><label>الاسترداد (RRR%):</label><input type="number" id="rrr" value="36.7" oninput="calculate()"></div>
+            <div><label>الضريبة:</label><select id="tax" onchange="calculate()"><option value="0.04">بريميوم (4%)</option><option value="0.08">بدون (8%)</option></select></div>
         </div>
     </div>
 
-    <!-- قسم الميزانية -->
-    <div class="section-title">💵 لو معاك فلوس (ميزانية ثابتة)</div>
-    <label>إجمالي السيلفر المتوفر:</label>
-    <input type="number" id="myBudget" value="1000000" oninput="calculate()">
-    <div class="result-container">
-        <div class="res-box"><span class="label-sm">تشتري خامات:</span><span id="budgetRaw" class="big-val">0</span></div>
-        <div class="res-box"><span class="label-sm">تشتري (T-1):</span><span id="budgetPrev" class="big-val">0</span></div>
-        <div class="res-box main-profit" id="budgetProfitBox">
-            <span class="label-sm">الربح الصافي:</span>
-            <span id="budgetProfit" style="font-size: 1.5rem; font-weight: bold;">0 Silver</span>
+    <div class="compare-grid">
+        <!-- كارت T4 -->
+        <div class="tier-card" id="cardT4">
+            <div class="best-label">أفضل استثمار ⭐</div>
+            <h3 style="text-align:center; color:var(--gold); margin-top:0;">T4.0</h3>
+            <label>سعر الخام:</label><input type="number" id="pRaw4" value="50" oninput="calculate()">
+            <label>سعر الـ T3:</label><input type="number" id="pPrev4" value="25" oninput="calculate()">
+            <label>سعر البيع:</label><input type="number" id="pSell4" value="220" oninput="calculate()">
+            <hr style="border:0; border-top:1px solid #333;">
+            <div class="stat-line"><span>الإنتاج:</span><span id="out4" class="stat-val">0</span></div>
+            <span id="profit4" class="profit-val">0</span>
+            <span id="roi4" class="roi-tag">ROI: 0%</span>
         </div>
-    </div>
 
-    <!-- قسم الموارد -->
-    <div class="section-title">📦 لو معاك موارد (بالقطعة)</div>
-    <label>كمية الخام المتوفرة:</label>
-    <input type="number" id="myRaw" value="1000" oninput="calculate()">
-    <div class="result-container">
-        <div class="res-box"><span class="label-sm">التكلفة الإجمالية:</span><span id="totalCost" class="big-val" style="color:#bbb;">0</span></div>
-        <div class="res-box"><span class="label-sm">الإنتاج المتوقع:</span><span id="expectedOutput" class="big-val">0</span></div>
-        <div class="res-box main-profit" id="resourceProfitBox">
-            <span class="label-sm">الربح الصافي:</span>
-            <span id="resourceProfit" style="font-size: 1.5rem; font-weight: bold;">0 Silver</span>
+        <!-- كارت T5 -->
+        <div class="tier-card" id="cardT5">
+            <div class="best-label">أفضل استثمار ⭐</div>
+            <h3 style="text-align:center; color:var(--gold); margin-top:0;">T5.0</h3>
+            <label>سعر الخام:</label><input type="number" id="pRaw5" value="120" oninput="calculate()">
+            <label>سعر الـ T4:</label><input type="number" id="pPrev5" value="80" oninput="calculate()">
+            <label>سعر البيع:</label><input type="number" id="pSell5" value="450" oninput="calculate()">
+            <hr style="border:0; border-top:1px solid #333;">
+            <div class="stat-line"><span>الإنتاج:</span><span id="out5" class="stat-val">0</span></div>
+            <span id="profit5" class="profit-val">0</span>
+            <span id="roi5" class="roi-tag">ROI: 0%</span>
         </div>
     </div>
 </div>
 
 <script>
 function calculate() {
-    const tier = Math.floor(parseFloat(document.getElementById('tier').value));
-    const rawPrice = parseFloat(document.getElementById('rawPrice').value) || 0;
-    const prevPrice = parseFloat(document.getElementById('prevPrice').value) || 0;
-    const sellPrice = parseFloat(document.getElementById('sellPrice').value) || 0;
+    const budget = parseFloat(document.getElementById('budget').value) || 0;
     const rrr = (parseFloat(document.getElementById('rrr').value) || 0) / 100;
-    const taxRate = parseFloat(document.getElementById('premium').value);
-    
-    const budget = parseFloat(document.getElementById('myBudget').value) || 0;
-    const myRaw = parseFloat(document.getElementById('myRaw').value) || 0;
+    const tax = parseFloat(document.getElementById('tax').value);
 
-    let mult = (tier === 4) ? 2 : (tier === 5 ? 3 : (tier === 6 ? 4 : 5));
-
-    function updateDisplay(boxId, textId, val) {
-        const box = document.getElementById(boxId);
-        const text = document.getElementById(textId);
-        text.innerText = Math.floor(val).toLocaleString() + " Silver";
-        if (val >= 0) {
-            box.style.borderColor = "var(--green)";
-            text.style.color = "var(--green)";
-        } else {
-            box.style.borderColor = "var(--red)";
-            text.style.color = "var(--red)";
-        }
+    function getProfit(tier, pRaw, pPrev, pSell) {
+        let mult = (tier === 4) ? 2 : 3;
+        const unitCost = (mult * pRaw * (1 - rrr)) + (pPrev * (1 - rrr));
+        if (unitCost <= 0) return { p: 0, o: 0, r: 0 };
+        const units = Math.floor(budget / unitCost);
+        const revenue = units * pSell;
+        const profit = revenue - (units * unitCost) - (revenue * tax);
+        const roi = (profit / budget) * 100;
+        return { p: profit, o: units, r: roi };
     }
 
-    // حسبة الميزانية
-    const unitCost = (mult * rawPrice * (1 - rrr)) + (prevPrice * (1 - rrr));
-    const unitsBudget = Math.floor(budget / unitCost);
-    document.getElementById('budgetRaw').innerText = Math.floor(unitsBudget * mult * (1 - rrr)).toLocaleString();
-    document.getElementById('budgetPrev').innerText = Math.floor(unitsBudget * (1 - rrr)).toLocaleString();
-    const bProfit = (unitsBudget * sellPrice) - budget - (unitsBudget * sellPrice * taxRate);
-    updateDisplay('budgetProfitBox', 'budgetProfit', bProfit);
+    const res4 = getProfit(4, parseFloat(document.getElementById('pRaw4').value), parseFloat(document.getElementById('pPrev4').value), parseFloat(document.getElementById('pSell4').value));
+    const res5 = getProfit(5, parseFloat(document.getElementById('pRaw5').value), parseFloat(document.getElementById('pPrev5').value), parseFloat(document.getElementById('pSell5').value));
 
-    // حسبة الموارد
-    const outputRaw = Math.floor(myRaw / (mult * (1 - rrr)));
-    const neededPrev = Math.floor(outputRaw * (1 - rrr));
-    const rCost = (myRaw * rawPrice) + (neededPrev * prevPrice);
-    const rProfit = (outputRaw * sellPrice) - rCost - (outputRaw * sellPrice * taxRate);
-    document.getElementById('totalCost').innerText = Math.floor(rCost).toLocaleString();
-    document.getElementById('expectedOutput').innerText = outputRaw.toLocaleString();
-    updateDisplay('resourceProfitBox', 'resourceProfit', rProfit);
+    // تحديث واجهة T4
+    document.getElementById('out4').innerText = res4.o.toLocaleString();
+    document.getElementById('profit4').innerText = Math.floor(res4.p).toLocaleString() + " Silver";
+    document.getElementById('profit4').style.color = res4.p >= 0 ? "var(--green)" : "var(--red)";
+    document.getElementById('roi4').innerText = "ROI: " + res4.r.toFixed(1) + "%";
+
+    // تحديث واجهة T5
+    document.getElementById('out5').innerText = res5.o.toLocaleString();
+    document.getElementById('profit5').innerText = Math.floor(res5.p).toLocaleString() + " Silver";
+    document.getElementById('profit5').style.color = res5.p >= 0 ? "var(--green)" : "var(--red)";
+    document.getElementById('roi5').innerText = "ROI: " + res5.r.toFixed(1) + "%";
+
+    // تحديد الأفضل
+    document.getElementById('cardT4').classList.remove('active-best');
+    document.getElementById('cardT5').classList.remove('active-best');
+    if (res4.p > res5.p && res4.p > 0) document.getElementById('cardT4').classList.add('active-best');
+    if (res5.p > res4.p && res5.p > 0) document.getElementById('cardT5').classList.add('active-best');
 }
 window.onload = calculate;
 </script>
