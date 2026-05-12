@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Albion Master Calc | هشام</title>
+    <style>
+        :root { --gold: #f1c40f; --green: #2ecc71; --red: #e74c3c; --bg: #121212; --card-bg: #1e1e1e; }
+        body { background: var(--bg); color: #eee; font-family: sans-serif; direction: rtl; padding: 10px; margin: 0; display: flex; justify-content: center; }
+        .card { background: var(--card-bg); border-radius: 20px; padding: 20px; width: 100%; max-width: 450px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .header { text-align: center; margin-bottom: 20px; }
+        h2 { color: var(--gold); margin: 0; }
+        .section-title { font-size: 0.85rem; color: var(--gold); margin: 15px 0 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.75rem; color: #bbb; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; background: #252525; border: 1px solid #444; border-radius: 8px; color: var(--green); font-weight: bold; box-sizing: border-box; font-size: 1rem; }
+        .result-card { background: #000; border-radius: 15px; padding: 15px; margin-top: 20px; border: 2px solid var(--gold); text-align: center; }
+        .profit-val { font-size: 1.8rem; font-weight: bold; display: block; margin: 5px 0; }
+        .needed-box { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-top: 10px; color: var(--gold); border: 1px dashed #444; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <h2>حاسبة الموارد التراكمية ⚔️</h2>
+        <small>إعداد: هشام (نظم معلومات)</small>
+    </div>
+
+    <div class="section-title">📦 إعدادات التشغيل</div>
+    <div class="input-grid">
+        <div class="input-group">
+            <label>المستوى (Tier):</label>
+            <select id="tier" onchange="calculate()">
+                <option value="2">T2 (خام فقط)</option>
+                <option value="3">T3 (يحتاج T2)</option>
+                <option value="4" selected>T4 (يحتاج T3)</option>
+                <option value="5">T5 (يحتاج T4)</option>
+                <option value="6">T6 (يحتاج T5)</option>
+                <option value="7">T7 (يحتاج T6)</option>
+                <option value="8">T8 (يحتاج T7)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>الكمية المستهدفة:</label>
+            <input type="number" id="amount" value="100" oninput="calculate()">
+        </div>
+    </div>
+
+    <div id="resultBox" class="result-card">
+        <span style="font-size: 0.8rem; color:#888;">صافي الربح المتوقع:</span>
+        <span id="totalProfit" class="profit-val">0</span>
+        
+        <!-- الخانة الجديدة لحساب الموارد المطلوبة -->
+        <div class="needed-box" id="neededInfo">
+            ستحتاج إلى: 0 قطعة من المستوى السابق
+        </div>
+    </div>
+    
+    <p style="font-size: 0.7rem; color: #555; text-align: center; margin-top: 15px;">
+        * الحسبة تعتمد على نظام تكرير ألبيون القياسي.
+    </p>
+</div>
+
+<script>
+function calculate() {
+    const tier = parseInt(document.getElementById('tier').value);
+    const amount = parseFloat(document.getElementById('amount').value) || 0;
+    const rrr = 0.367; // نسبة الاسترداد الافتراضية للمدينة المناسبة
+
+    // 1. حساب عدد الموارد من المستوى السابق (T-1) المطلوبة
+    // في ألبيون: لإنتاج كمية معينة، ستحتاج قطعة واحدة من المستوى السابق لكل ضغطة
+    // ولكن مع الـ RRR، الكمية الفعلية اللي هتستهلكها بتقل
+    let neededBeforeRRR = amount;
+    if (tier === 2) neededBeforeRRR = 0; // T2 لا يحتاج مستوى سابق
+
+    const actualNeeded = Math.ceil(neededBeforeRRR * (1 - rrr));
+    
+    const neededInfo = document.getElementById('neededInfo');
+    if (tier > 2) {
+        neededInfo.innerText = `ستحتاج لشراء: ${actualNeeded.toLocaleString()} قطعة T${tier-1}`;
+        neededInfo.style.display = "block";
+    } else {
+        neededInfo.style.display = "none";
+    }
+
+    // حسبة ربح تقريبية سريعة (للتوضيح)
+    const mockProfit = amount * 50; 
+    document.getElementById('totalProfit').innerText = Math.floor(mockProfit).toLocaleString() + " Silver";
+}
+window.onload = calculate;
+</script>
+</body>
+</html>
