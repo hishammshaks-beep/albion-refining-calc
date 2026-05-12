@@ -19,6 +19,10 @@
         label { display: block; font-size: 0.7rem; color: #888; margin-bottom: 2px; }
         .res-box { background: #000; border: 1px solid var(--gold); border-radius: 10px; padding: 8px; text-align: center; margin-top: 5px; }
         .profit-frame { border: 2px solid var(--green); padding: 12px; border-radius: 12px; margin-top: 10px; text-align: center; }
+        /* ستايل الموارد المطلوبة */
+        .needed-list { margin-top: 10px; border-top: 1px solid #333; padding-top: 10px; font-size: 0.8rem; }
+        .needed-item { display: flex; justify-content: space-between; margin-bottom: 5px; color: #bbb; }
+        .needed-item b { color: var(--gold); }
     </style>
 </head>
 <body>
@@ -36,7 +40,6 @@
 
     <div style="color:var(--gold); font-weight:bold; margin-bottom:10px;">⚖️ مقارنة الأرباح</div>
     <div class="compare-grid">
-        <!-- كارت 1 -->
         <div class="tier-card" id="card1">
             <div class="best-label">أفضل خيار ⭐</div>
             <select id="t1_tier" onchange="calculate()"></select>
@@ -45,7 +48,6 @@
             <label>سعر البيع:</label><input type="number" id="t1_sell" value="0" oninput="calculate()">
             <div class="res-box"><span id="t1_profit" style="font-weight:bold;">0</span><br><span id="t1_roi" style="font-size:0.6rem; color:var(--gold);">ROI: 0%</span></div>
         </div>
-        <!-- كارت 2 -->
         <div class="tier-card" id="card2">
             <div class="best-label">أفضل خيار ⭐</div>
             <select id="t2_tier" onchange="calculate()"></select>
@@ -60,7 +62,13 @@
     <div class="card">
         <label>كمية الخام اللي معاك (مثلاً 1000):</label>
         <input type="number" id="detailRaw" value="0" oninput="calculate()">
-        <p style="font-size:0.6rem; color:#888; margin:5px 0;">* الحسبة تحت بتعتمد على أسعار "أفضل خيار" اللي اخترته فوق.</p>
+        
+        <!-- الجزء الجديد: قائمة الموارد المطلوبة -->
+        <div class="needed-list" id="resourceList">
+            <div class="needed-item"><span>مطلوب خام:</span> <b id="reqRaw">0</b></div>
+            <div class="needed-item"><span>مطلوب مكرر (T-1):</span> <b id="reqPrev">0</b></div>
+        </div>
+
         <div class="compare-grid">
             <div class="res-box"><label>التكلفة:</label><span id="detCost" style="color:#bbb">0</span></div>
             <div class="res-box"><label>إنتاج متوقع:</label><span id="detOut" style="color:var(--green); font-weight:bold;">0</span></div>
@@ -89,16 +97,20 @@ function calculate() {
     const tax = parseFloat(data.tax);
 
     function getStats(prefix) {
-        const tNum = parseInt(data[prefix + '_tier'].split('T')[1]);
+        const tierVal = data[prefix + '_tier'];
+        const tNum = parseInt(tierVal.split('T')[1]);
         const pRaw = parseFloat(data[prefix + '_raw']) || 0;
         const pPrev = parseFloat(data[prefix + '_prev']) || 0;
         const pSell = parseFloat(data[prefix + '_sell']) || 0;
+        
+        // حساب الـ Multiplier بناءً على الـ Tier
         let mult = (tNum <= 4) ? 2 : (tNum === 5 ? 3 : (tNum === 6 ? 4 : 5));
+        
         const unitCost = (mult * pRaw * (1 - rrr)) + (pPrev * (1 - rrr));
-        if (unitCost <= 0) return { p: -1, r: 0, raw: pRaw, prev: pPrev, sell: pSell, m: mult };
+        if (unitCost <= 0) return { p: -1, r: 0, raw: pRaw, prev: pPrev, sell: pSell, m: mult, tName: tierVal };
         const units = Math.floor(budget / unitCost);
         const profit = (units * pSell) - (units * unitCost) - (units * pSell * tax);
-        return { p: profit, r: (profit / budget) * 100, raw: pRaw, prev: pPrev, sell: pSell, m: mult };
+        return { p: profit, r: (profit / budget) * 100, raw: pRaw, prev: pPrev, sell: pSell, m: mult, tName: tierVal };
     }
 
     const r1 = getStats('t1'); const r2 = getStats('t2');
@@ -115,15 +127,22 @@ function calculate() {
     document.getElementById('card1').className = isR1Best ? 'tier-card active-best' : 'tier-card';
     document.getElementById('card2').className = !isR1Best ? 'tier-card active-best' : 'tier-card';
 
-    // الجزء اللي تحت يسحب من الأفضل
     const best = isR1Best ? r1 : r2;
     const dRaw = parseFloat(data.detailRaw) || 0;
-    const outD = Math.floor(dRaw / (best.m * (1 - rrr)));
-    const costD = (dRaw * best.raw) + (outD * (1 - rrr) * best.prev);
+    
+    // الحسبة التلقائية للمواد
+    const outD = Math.floor(dRaw / best.m); // الإنتاج بناءً على الخام المتوفر
+    const prevNeeded = Math.floor(outD * 1); // بيحتاج قطعة واحدة مكررة لكل عملية تكرير
+    
+    const costD = (dRaw * best.raw) + (prevNeeded * best.prev);
     const profitD = (outD * best.sell) - costD - (outD * best.sell * tax);
 
+    // تحديث الواجهة
+    document.getElementById('reqRaw').innerText = dRaw.toLocaleString();
+    document.getElementById('reqPrev').innerText = prevNeeded.toLocaleString() + " (من " + best.tName.split('.')[0] + ".0)";
     document.getElementById('detOut').innerText = outD.toLocaleString();
     document.getElementById('detCost').innerText = Math.floor(costD).toLocaleString();
+    
     const dP = document.getElementById('detProfit');
     dP.innerText = Math.floor(profitD).toLocaleString() + " Silver";
     dP.style.color = profitD >= 0 ? "var(--green)" : "var(--red)";
